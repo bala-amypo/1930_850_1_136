@@ -1,29 +1,61 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
+import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.LoanRequest;
+import com.example.demo.entity.RiskAssessment;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.repository.RiskAssessmentRepository;
 
-import org.springframework.stereotype.Service;
+public class RiskAssessmentServiceImpl {
 
-import com.example.demo.entity.RiskAssessmentLog;
-import com.example.demo.repository.RiskAssessmentLogRepository;
-import com.example.demo.service.RiskAssessmentLogService;
+    private final LoanRequestRepository loanRequestRepository;
+    private final FinancialProfileRepository financialProfileRepository;
+    private final RiskAssessmentRepository riskAssessmentRepository;
 
-@Service
-public class RiskAssessmentLogServiceImpl implements RiskAssessmentLogService {
+    // ✅ Constructor Injection
+    public RiskAssessmentServiceImpl(
+            LoanRequestRepository loanRequestRepository,
+            FinancialProfileRepository financialProfileRepository,
+            RiskAssessmentRepository riskAssessmentRepository) {
 
-    private final RiskAssessmentLogRepository repository;
-
-    public RiskAssessmentLogServiceImpl(RiskAssessmentLogRepository repository) {
-        this.repository = repository;
+        this.loanRequestRepository = loanRequestRepository;
+        this.financialProfileRepository = financialProfileRepository;
+        this.riskAssessmentRepository = riskAssessmentRepository;
     }
 
-    @Override
-    public RiskAssessmentLog logAssessment(RiskAssessmentLog log) {
-        return repository.save(log);
+    public RiskAssessment assessRisk(Long loanRequestId) {
+
+        if (riskAssessmentRepository.findByLoanRequestId(loanRequestId).isPresent()) {
+            throw new BadRequestException("Duplicate risk");
+        }
+
+        LoanRequest loanRequest = loanRequestRepository.findById(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        FinancialProfile profile =
+                financialProfileRepository.findByUserId(loanRequest.getUser().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+
+        double income = profile.getMonthlyIncome() == null ? 0 : profile.getMonthlyIncome();
+        double obligations =
+                (profile.getMonthlyExpenses() == null ? 0 : profile.getMonthlyExpenses()) +
+                (profile.getExistingLoanEmi() == null ? 0 : profile.getExistingLoanEmi());
+
+        double dti = income == 0 ? 0 : obligations / income;
+
+        RiskAssessment risk = new RiskAssessment();
+        risk.setLoanRequestId(loanRequestId);
+        risk.setDtiRatio(dti);
+        risk.setCreditCheckStatus(profile.getCreditScore() >= 600 ? "PASS" : "FAIL");
+
+        return riskAssessmentRepository.save(risk);
     }
 
-    @Override
-    public List<RiskAssessmentLog> getLogsByRequest(Long loanRequestId) {
-        return repository.findByLoanRequestId(loanRequestId);
+    public RiskAssessment getByLoanRequestId(Long loanRequestId) {
+        return riskAssessmentRepository.findByLoanRequestId(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
     }
 }
