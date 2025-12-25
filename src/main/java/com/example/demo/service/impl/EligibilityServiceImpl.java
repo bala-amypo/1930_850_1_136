@@ -9,7 +9,9 @@ import com.example.demo.repository.EligibilityResultRepository;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.service.EligibilityService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EligibilityServiceImpl implements EligibilityService {
 
     private final LoanRequestRepository loanRequestRepository;

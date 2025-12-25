@@ -9,7 +9,9 @@ import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.RiskAssessmentRepository;
 import com.example.demo.service.RiskAssessmentService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     private final LoanRequestRepository loanRequestRepository;
