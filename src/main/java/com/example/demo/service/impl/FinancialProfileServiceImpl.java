@@ -6,10 +6,11 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.FinancialProfileService;
 
 import java.util.Optional;
 
-public class FinancialProfileServiceImpl {
+public class FinancialProfileServiceImpl implements FinancialProfileService {
 
     private final FinancialProfileRepository profileRepository;
     private final UserRepository userRepository;
@@ -22,6 +23,7 @@ public class FinancialProfileServiceImpl {
         this.userRepository = userRepository;
     }
 
+    @Override
     public FinancialProfile createOrUpdate(FinancialProfile profile) {
 
         if (profile.getCreditScore() == null ||
@@ -47,6 +49,7 @@ public class FinancialProfileServiceImpl {
         return profileRepository.save(profile);
     }
 
+    @Override
     public FinancialProfile getByUserId(Long userId) {
         return profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

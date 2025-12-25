@@ -8,8 +8,9 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.RiskAssessmentRepository;
+import com.example.demo.service.RiskAssessmentService;
 
-public class RiskAssessmentServiceImpl {
+public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     private final LoanRequestRepository loanRequestRepository;
     private final FinancialProfileRepository financialProfileRepository;
@@ -26,6 +27,7 @@ public class RiskAssessmentServiceImpl {
         this.riskAssessmentRepository = riskAssessmentRepository;
     }
 
+    @Override
     public RiskAssessment assessRisk(Long loanRequestId) {
 
         if (riskAssessmentRepository.findByLoanRequestId(loanRequestId).isPresent()) {
@@ -54,6 +56,7 @@ public class RiskAssessmentServiceImpl {
         return riskAssessmentRepository.save(risk);
     }
 
+    @Override
     public RiskAssessment getByLoanRequestId(Long loanRequestId) {
         return riskAssessmentRepository.findByLoanRequestId(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));

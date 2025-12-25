@@ -4,11 +4,12 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -18,7 +19,7 @@ public class UserServiceImpl {
         this.userRepository = userRepository;
     }
 
-    // Used in tests: registerUser / register
+    @Override
     public User register(User user) {
 
         Optional<User> existing = userRepository.findByEmail(user.getEmail());
@@ -32,11 +33,13 @@ public class UserServiceImpl {
         return userRepository.save(user);
     }
 
+    @Override
     public User getById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
