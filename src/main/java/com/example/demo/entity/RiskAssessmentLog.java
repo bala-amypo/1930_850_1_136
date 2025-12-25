@@ -1,65 +1,34 @@
 package com.example.demo.entity;
 
-import java.sql.Timestamp;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.time.Instant;
 
 @Entity
-public class RiskAssessmentLog {
+public class RiskAssessment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private Long loanRequestId;
-
     private Double dtiRatio;
     private String creditCheckStatus;
+    private Instant timestamp = Instant.now();
 
-    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-    // ===== Getters & Setters =====
-
-    public Long getId() {
-        return id;
-    }
- 
-    public void setId(Long id) {
-        this.id = id;
+    public Double getRiskScore() {
+        return Math.min(100.0, dtiRatio * 100);
     }
 
-    public Long getLoanRequestId() {
-        return loanRequestId;
-    }
- 
-    public void setLoanRequestId(Long loanRequestId) {
-        this.loanRequestId = loanRequestId;
-    }
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Double getDtiRatio() {
-        return dtiRatio;
-    }
- 
-    public void setDtiRatio(Double dtiRatio) {
-        this.dtiRatio = dtiRatio;
-    }
+    public Long getLoanRequestId() { return loanRequestId; }
+    public void setLoanRequestId(Long loanRequestId) { this.loanRequestId = loanRequestId; }
 
-    public String getCreditCheckStatus() {
-        return creditCheckStatus;
-    }
- 
-    public void setCreditCheckStatus(String creditCheckStatus) {
-        this.creditCheckStatus = creditCheckStatus;
-    }
+    public Double getDtiRatio() { return dtiRatio; }
+    public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
- 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
+    public String getCreditCheckStatus() { return creditCheckStatus; }
+    public void setCreditCheckStatus(String creditCheckStatus) { this.creditCheckStatus = creditCheckStatus; }
 }
