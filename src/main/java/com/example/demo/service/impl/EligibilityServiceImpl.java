@@ -8,8 +8,9 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EligibilityResultRepository;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.service.EligibilityService;
 
-public class EligibilityServiceImpl {
+public class EligibilityServiceImpl implements EligibilityService {
 
     private final LoanRequestRepository loanRequestRepository;
     private final FinancialProfileRepository financialProfileRepository;
@@ -26,6 +27,7 @@ public class EligibilityServiceImpl {
         this.eligibilityResultRepository = eligibilityResultRepository;
     }
 
+    @Override
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
 
         if (eligibilityResultRepository.findByLoanRequestId(loanRequestId).isPresent()) {
@@ -55,6 +57,7 @@ public class EligibilityServiceImpl {
         return eligibilityResultRepository.save(result);
     }
 
+    @Override
     public EligibilityResult getByLoanRequestId(Long loanRequestId) {
         return eligibilityResultRepository.findByLoanRequestId(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
