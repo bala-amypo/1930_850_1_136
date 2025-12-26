@@ -1,66 +1,38 @@
-package com.example.demo.service.impl;
+public class RiskAssessmentServiceImpl {
 
-import com.example.demo.entity.FinancialProfile;
-import com.example.demo.entity.LoanRequest;
-import com.example.demo.entity.RiskAssessment;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.FinancialProfileRepository;
-import com.example.demo.repository.LoanRequestRepository;
-import com.example.demo.repository.RiskAssessmentRepository;
-import com.example.demo.service.RiskAssessmentService;
-import org.springframework.stereotype.Service;
+    private final LoanRequestRepository loanRepo;
+    private final FinancialProfileRepository profileRepo;
+    private final RiskAssessmentRepository repo;
 
-@Service
-public class RiskAssessmentServiceImpl implements RiskAssessmentService {
-
-    private final LoanRequestRepository loanRequestRepository;
-    private final FinancialProfileRepository financialProfileRepository;
-    private final RiskAssessmentRepository riskAssessmentRepository;
-
-    // ✅ Constructor Injection
-    public RiskAssessmentServiceImpl(
-            LoanRequestRepository loanRequestRepository,
-            FinancialProfileRepository financialProfileRepository,
-            RiskAssessmentRepository riskAssessmentRepository) {
-
-        this.loanRequestRepository = loanRequestRepository;
-        this.financialProfileRepository = financialProfileRepository;
-        this.riskAssessmentRepository = riskAssessmentRepository;
+    public RiskAssessmentServiceImpl(LoanRequestRepository l,
+                                     FinancialProfileRepository f,
+                                     RiskAssessmentRepository r) {
+        loanRepo = l;
+        profileRepo = f;
+        repo = r;
     }
 
-    @Override
-    public RiskAssessment assessRisk(Long loanRequestId) {
+    public RiskAssessment assessRisk(Long requestId) {
 
-        if (riskAssessmentRepository.findByLoanRequestId(loanRequestId).isPresent()) {
+        if (repo.findByLoanRequestId(requestId).isPresent())
             throw new BadRequestException("Duplicate risk");
-        }
 
-        LoanRequest loanRequest = loanRequestRepository.findById(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        LoanRequest lr = loanRepo.findById(requestId).orElseThrow();
+        FinancialProfile fp = profileRepo.findByUserId(lr.getUser().getId()).orElseThrow();
 
-        FinancialProfile profile =
-                financialProfileRepository.findByUserId(loanRequest.getUser().getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+        RiskAssessment ra = new RiskAssessment();
+        ra.setLoanRequestId(requestId);
 
-        double income = profile.getMonthlyIncome() == null ? 0 : profile.getMonthlyIncome();
-        double obligations =
-                (profile.getMonthlyExpenses() == null ? 0 : profile.getMonthlyExpenses()) +
-                (profile.getExistingLoanEmi() == null ? 0 : profile.getExistingLoanEmi());
+        double income = fp.getMonthlyIncome();
+        ra.setDtiRatio(income == 0 ? 0.0 :
+                (fp.getMonthlyExpenses() + fp.getExistingLoanEmi()) / income);
 
-        double dti = income == 0 ? 0 : obligations / income;
+        ra.setRiskScore(Math.min(100, ra.getDtiRatio() * 100));
 
-        RiskAssessment risk = new RiskAssessment();
-        risk.setLoanRequestId(loanRequestId);
-        risk.setDtiRatio(dti);
-        risk.setCreditCheckStatus(profile.getCreditScore() >= 600 ? "PASS" : "FAIL");
-
-        return riskAssessmentRepository.save(risk);
+        return repo.save(ra);
     }
 
-    @Override
-    public RiskAssessment getByLoanRequestId(Long loanRequestId) {
-        return riskAssessmentRepository.findByLoanRequestId(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+    public RiskAssessment getByLoanRequestId(Long id) {
+        return repo.findByLoanRequestId(id).orElseThrow();
     }
 }
