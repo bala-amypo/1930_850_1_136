@@ -1,25 +1,85 @@
-@Entity
-public class LoanRequest {
+package com.example.demo.entity;
 
-    public enum Status { PENDING, APPROVED, REJECTED }
+import jakarta.persistence.*;
+import java.sql.Timestamp;
+
+@Entity
+public class EligibilityResult {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private User user;
+    @OneToOne
+    private LoanRequest loanRequest;
 
-    private Double requestedAmount;
-    private Integer tenureMonths;
-    private String purpose;
+    private Boolean isEligible;
+    private Double maxEligibleAmount;
+    private Double estimatedEmi;
+    private String riskLevel;
+    private String rejectionReason;
 
-    private String status = Status.PENDING.name();
+    private Timestamp calculatedAt = new Timestamp(System.currentTimeMillis());
 
-    private Timestamp submittedAt;
+    // ===== GETTERS & SETTERS =====
 
-    @PrePersist
-    void onCreate() {
-        submittedAt = new Timestamp(System.currentTimeMillis());
+    public Long getId() {
+        return id;
+    }
+ 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LoanRequest getLoanRequest() {
+        return loanRequest;
+    }
+ 
+    public void setLoanRequest(LoanRequest loanRequest) {
+        this.loanRequest = loanRequest;
+    }
+
+    public Boolean getIsEligible() {
+        return isEligible;
+    }
+ 
+    public void setIsEligible(Boolean eligible) {
+        isEligible = eligible;
+    }
+
+    public Double getMaxEligibleAmount() {
+        return maxEligibleAmount;
+    }
+ 
+    public void setMaxEligibleAmount(Double maxEligibleAmount) {
+        this.maxEligibleAmount = maxEligibleAmount;
+    }
+
+    public Double getEstimatedEmi() {
+        return estimatedEmi;
+    }
+ 
+    public void setEstimatedEmi(Double estimatedEmi) {
+        this.estimatedEmi = estimatedEmi;
+    }
+
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+ 
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+ 
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public Timestamp getCalculatedAt() {
+        return calculatedAt;
     }
 }
