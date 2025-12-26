@@ -1,18 +1,15 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
-@Table(name = "users")
 public class User {
 
-    public enum Role {
-        ADMIN, CUSTOMER
-    }
+    public enum Role { ADMIN, CUSTOMER }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private String fullName;
@@ -24,51 +21,23 @@ public class User {
 
     private String role = Role.CUSTOMER.name();
 
-    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+    private Instant createdAt = Instant.now();
 
-    // ===== GETTERS & SETTERS =====
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getFullName() {
-        return fullName;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
- 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
- 
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
+    public Instant getCreatedAt() { return createdAt; }
 }

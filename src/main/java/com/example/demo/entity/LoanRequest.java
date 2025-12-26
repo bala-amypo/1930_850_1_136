@@ -1,17 +1,15 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 public class LoanRequest {
 
-    public enum Status {
-        PENDING, APPROVED, REJECTED
-    }
+    public enum Status { PENDING, APPROVED, REJECTED }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     @ManyToOne
@@ -20,59 +18,31 @@ public class LoanRequest {
     private Double requestedAmount;
     private Integer tenureMonths;
     private String purpose;
-
-    private String status = Status.PENDING.name();
-
-    private Timestamp submittedAt;
+    private String status;
+    private Instant submittedAt;
 
     @PrePersist
-    protected void onCreate() {
-        submittedAt = new Timestamp(System.currentTimeMillis());
+    public void init() {
+        status = Status.PENDING.name();
+        submittedAt = Instant.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public User getUser() {
-        return user;
-    }
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public Double getRequestedAmount() {
-        return requestedAmount;
-    }
-    public void setRequestedAmount(Double requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
+    public Double getRequestedAmount() { return requestedAmount; }
+    public void setRequestedAmount(Double requestedAmount) { this.requestedAmount = requestedAmount; }
 
-    public Integer getTenureMonths() {
-        return tenureMonths;
-    }
-    public void setTenureMonths(Integer tenureMonths) {
-        this.tenureMonths = tenureMonths;
-    }
+    public Integer getTenureMonths() { return tenureMonths; }
+    public void setTenureMonths(Integer tenureMonths) { this.tenureMonths = tenureMonths; }
 
-    public String getPurpose() {
-        return purpose;
-    }
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
-    }
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 
-    public String getStatus() {
-        return status;
-    }
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Timestamp getSubmittedAt() {
-        return submittedAt;
-    }
+    public String getStatus() { return status; }
+    public Instant getSubmittedAt() { return submittedAt; }
 }
