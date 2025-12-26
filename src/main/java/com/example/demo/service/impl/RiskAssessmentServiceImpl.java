@@ -1,38 +1,63 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.LoanRequest;
+import com.example.demo.entity.RiskAssessment;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.repository.RiskAssessmentRepository;
+
 public class RiskAssessmentServiceImpl {
 
-    private final LoanRequestRepository loanRepo;
-    private final FinancialProfileRepository profileRepo;
-    private final RiskAssessmentRepository repo;
+    private final LoanRequestRepository loanRequestRepository;
+    private final FinancialProfileRepository financialProfileRepository;
+    private final RiskAssessmentRepository riskAssessmentRepository;
 
-    public RiskAssessmentServiceImpl(LoanRequestRepository l,
-                                     FinancialProfileRepository f,
-                                     RiskAssessmentRepository r) {
-        loanRepo = l;
-        profileRepo = f;
-        repo = r;
+    // Constructor injection (REQUIRED)
+    public RiskAssessmentServiceImpl(LoanRequestRepository loanRequestRepository,
+                                     FinancialProfileRepository financialProfileRepository,
+                                     RiskAssessmentRepository riskAssessmentRepository) {
+        this.loanRequestRepository = loanRequestRepository;
+        this.financialProfileRepository = financialProfileRepository;
+        this.riskAssessmentRepository = riskAssessmentRepository;
     }
 
-    public RiskAssessment assessRisk(Long requestId) {
+    // Assess loan risk
+    public RiskAssessment assessRisk(Long loanRequestId) {
 
-        if (repo.findByLoanRequestId(requestId).isPresent())
+        // Prevent duplicate risk assessment
+        if (riskAssessmentRepository.findByLoanRequestId(loanRequestId).isPresent()) {
             throw new BadRequestException("Duplicate risk");
+        }
 
-        LoanRequest lr = loanRepo.findById(requestId).orElseThrow();
-        FinancialProfile fp = profileRepo.findByUserId(lr.getUser().getId()).orElseThrow();
+        LoanRequest loanRequest = loanRequestRepository.findById(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-        RiskAssessment ra = new RiskAssessment();
-        ra.setLoanRequestId(requestId);
+        FinancialProfile profile = financialProfileRepository
+                .findByUserId(loanRequest.getUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-        double income = fp.getMonthlyIncome();
-        ra.setDtiRatio(income == 0 ? 0.0 :
-                (fp.getMonthlyExpenses() + fp.getExistingLoanEmi()) / income);
+        RiskAssessment assessment = new RiskAssessment();
+        assessment.setLoanRequestId(loanRequestId);
 
-        ra.setRiskScore(Math.min(100, ra.getDtiRatio() * 100));
+        double income = profile.getMonthlyIncome() == null ? 0.0 : profile.getMonthlyIncome();
+        double expenses = profile.getMonthlyExpenses() == null ? 0.0 : profile.getMonthlyExpenses();
+        double existingEmi = profile.getExistingLoanEmi() == null ? 0.0 : profile.getExistingLoanEmi();
 
-        return repo.save(ra);
+        double dti = income == 0 ? 0.0 : (expenses + existingEmi) / income;
+        assessment.setDtiRatio(dti);
+
+        double riskScore = Math.min(100.0, dti * 100);
+        assessment.setRiskScore(riskScore);
+
+        return riskAssessmentRepository.save(assessment);
     }
 
-    public RiskAssessment getByLoanRequestId(Long id) {
-        return repo.findByLoanRequestId(id).orElseThrow();
+    // Get risk assessment by loan request id
+    public RiskAssessment getByLoanRequestId(Long loanRequestId) {
+        return riskAssessmentRepository.findByLoanRequestId(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
     }
 }
