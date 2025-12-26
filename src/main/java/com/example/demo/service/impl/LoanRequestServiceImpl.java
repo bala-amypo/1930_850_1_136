@@ -6,9 +6,10 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class LoanRequestServiceImpl {
 
     private final LoanRequestRepository loanRequestRepository;

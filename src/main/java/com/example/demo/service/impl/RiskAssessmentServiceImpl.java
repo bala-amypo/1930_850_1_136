@@ -8,7 +8,8 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.RiskAssessmentRepository;
-
+import org.springframework.stereotype.Service;
+@Service
 public class RiskAssessmentServiceImpl {
 
     private final LoanRequestRepository loanRequestRepository;

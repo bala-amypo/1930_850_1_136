@@ -8,9 +8,10 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EligibilityResultRepository;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public class EligibilityServiceImpl {
 
     private final LoanRequestRepository loanRequestRepository;
