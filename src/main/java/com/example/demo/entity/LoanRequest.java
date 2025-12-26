@@ -4,82 +4,75 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-public class EligibilityResult {
+public class LoanRequest {
+
+    public enum Status {
+        PENDING, APPROVED, REJECTED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private LoanRequest loanRequest;
+    @ManyToOne
+    private User user;
 
-    private Boolean isEligible;
-    private Double maxEligibleAmount;
-    private Double estimatedEmi;
-    private String riskLevel;
-    private String rejectionReason;
+    private Double requestedAmount;
+    private Integer tenureMonths;
+    private String purpose;
 
-    private Timestamp calculatedAt = new Timestamp(System.currentTimeMillis());
+    private String status = Status.PENDING.name();
 
-    // ===== GETTERS & SETTERS =====
+    private Timestamp submittedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        submittedAt = new Timestamp(System.currentTimeMillis());
+    }
 
     public Long getId() {
         return id;
     }
- 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public LoanRequest getLoanRequest() {
-        return loanRequest;
+    public User getUser() {
+        return user;
     }
- 
-    public void setLoanRequest(LoanRequest loanRequest) {
-        this.loanRequest = loanRequest;
-    }
-
-    public Boolean getIsEligible() {
-        return isEligible;
-    }
- 
-    public void setIsEligible(Boolean eligible) {
-        isEligible = eligible;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Double getMaxEligibleAmount() {
-        return maxEligibleAmount;
+    public Double getRequestedAmount() {
+        return requestedAmount;
     }
- 
-    public void setMaxEligibleAmount(Double maxEligibleAmount) {
-        this.maxEligibleAmount = maxEligibleAmount;
-    }
-
-    public Double getEstimatedEmi() {
-        return estimatedEmi;
-    }
- 
-    public void setEstimatedEmi(Double estimatedEmi) {
-        this.estimatedEmi = estimatedEmi;
+    public void setRequestedAmount(Double requestedAmount) {
+        this.requestedAmount = requestedAmount;
     }
 
-    public String getRiskLevel() {
-        return riskLevel;
+    public Integer getTenureMonths() {
+        return tenureMonths;
     }
- 
-    public void setRiskLevel(String riskLevel) {
-        this.riskLevel = riskLevel;
-    }
-
-    public String getRejectionReason() {
-        return rejectionReason;
-    }
- 
-    public void setRejectionReason(String rejectionReason) {
-        this.rejectionReason = rejectionReason;
+    public void setTenureMonths(Integer tenureMonths) {
+        this.tenureMonths = tenureMonths;
     }
 
-    public Timestamp getCalculatedAt() {
-        return calculatedAt;
+    public String getPurpose() {
+        return purpose;
+    }
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Timestamp getSubmittedAt() {
+        return submittedAt;
     }
 }
