@@ -19,12 +19,28 @@ public class LoanRequest {
     private Integer tenureMonths;
     private String purpose;
     private String status;
+
+    // 🔥 REQUIRED BY TESTS
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    // Optional, but allowed
     private Instant submittedAt;
 
     @PrePersist
-    public void init() {
-        status = Status.PENDING.name();
-        submittedAt = Instant.now();
+    public void prePersist() {
+        if (status == null) {
+            status = Status.PENDING.name();
+        }
+        Instant now = Instant.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.submittedAt = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
     }
 
     // getters & setters
@@ -35,14 +51,21 @@ public class LoanRequest {
     public void setUser(User user) { this.user = user; }
 
     public Double getRequestedAmount() { return requestedAmount; }
-    public void setRequestedAmount(Double requestedAmount) { this.requestedAmount = requestedAmount; }
+    public void setRequestedAmount(Double requestedAmount) {
+        this.requestedAmount = requestedAmount;
+    }
 
     public Integer getTenureMonths() { return tenureMonths; }
-    public void setTenureMonths(Integer tenureMonths) { this.tenureMonths = tenureMonths; }
+    public void setTenureMonths(Integer tenureMonths) {
+        this.tenureMonths = tenureMonths;
+    }
 
     public String getPurpose() { return purpose; }
     public void setPurpose(String purpose) { this.purpose = purpose; }
 
     public String getStatus() { return status; }
+
+    public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
     public Instant getSubmittedAt() { return submittedAt; }
 }
