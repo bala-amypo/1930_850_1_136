@@ -8,7 +8,9 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.LoanRequestService;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service   // ✅ ADD THIS
 public class LoanRequestServiceImpl implements LoanRequestService {
 
     private final LoanRequestRepository loanRequestRepository;

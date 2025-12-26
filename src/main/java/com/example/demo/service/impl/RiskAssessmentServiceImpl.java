@@ -5,7 +5,9 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.*;
 import com.example.demo.service.RiskAssessmentService;
+import org.springframework.stereotype.Service;
 
+@Service   // ✅ ADD THIS
 public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     private final LoanRequestRepository loanRequestRepository;

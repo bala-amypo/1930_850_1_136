@@ -5,7 +5,9 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.*;
 import com.example.demo.service.EligibilityService;
+import org.springframework.stereotype.Service;
 
+@Service   // ✅ ADD THIS
 public class EligibilityServiceImpl implements EligibilityService {
 
     private final LoanRequestRepository loanRequestRepository;

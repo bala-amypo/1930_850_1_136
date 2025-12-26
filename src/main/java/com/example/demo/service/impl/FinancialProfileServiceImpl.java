@@ -6,7 +6,9 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FinancialProfileService;
+import org.springframework.stereotype.Service;
 
+@Service   // ✅ ADD THIS
 public class FinancialProfileServiceImpl implements FinancialProfileService {
 
     private final FinancialProfileRepository profileRepository;
