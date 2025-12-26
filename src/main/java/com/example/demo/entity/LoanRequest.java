@@ -20,12 +20,18 @@ public class LoanRequest {
     private String purpose;
     private String status;
 
-    // 🔥 REQUIRED BY TESTS
     private Instant createdAt;
     private Instant updatedAt;
-
-    // Optional, but allowed
     private Instant submittedAt;
+
+    // 🔥 THIS FIXES ALL FAILING TESTS
+    public LoanRequest() {
+        Instant now = Instant.now();
+        this.status = Status.PENDING.name();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.submittedAt = now;
+    }
 
     @PrePersist
     public void prePersist() {
@@ -33,14 +39,14 @@ public class LoanRequest {
             status = Status.PENDING.name();
         }
         Instant now = Instant.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-        this.submittedAt = now;
+        if (createdAt == null) createdAt = now;
+        updatedAt = now;
+        if (submittedAt == null) submittedAt = now;
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = Instant.now();
+        updatedAt = Instant.now();
     }
 
     // getters & setters
@@ -64,7 +70,6 @@ public class LoanRequest {
     public void setPurpose(String purpose) { this.purpose = purpose; }
 
     public String getStatus() { return status; }
-
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public Instant getSubmittedAt() { return submittedAt; }
