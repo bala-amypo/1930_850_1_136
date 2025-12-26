@@ -1,10 +1,11 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.LoanRequest;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.*;
 
-import java.util.List;
-
-public interface LoanRequestRepository extends JpaRepository<LoanRequest, Long> {
+public interface LoanRequestRepository {
+    Optional<LoanRequest> findById(Long id);
     List<LoanRequest> findByUserId(Long userId);
+    List<LoanRequest> findAll();
+    LoanRequest save(LoanRequest request);
 }

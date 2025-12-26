@@ -1,41 +1,30 @@
 package com.example.demo.security;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtFilter implements Filter {
 
     private final JwtUtil jwtUtil;
 
-    // Constructor used in tests
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
 
-        String authHeader = request.getHeader("Authorization");
+        HttpServletRequest request = (HttpServletRequest) req;
+        String header = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+        if (header != null && header.startsWith("Bearer ")) {
             try {
-                // Validate token (claims extraction)
-                jwtUtil.getAllClaims(token);
-            } catch (Exception ex) {
-                // IMPORTANT: swallow exception and continue
-            }
+                jwtUtil.getAllClaims(header.substring(7));
+            } catch (Exception ignored) {}
         }
 
-        // Always continue filter chain
-        filterChain.doFilter(request, response);
+        chain.doFilter(req, res);
     }
 }

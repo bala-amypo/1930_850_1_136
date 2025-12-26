@@ -1,10 +1,9 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.FinancialProfile;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
-public interface FinancialProfileRepository extends JpaRepository<FinancialProfile, Long> {
+public interface FinancialProfileRepository {
     Optional<FinancialProfile> findByUserId(Long userId);
+    FinancialProfile save(FinancialProfile profile);
 }
