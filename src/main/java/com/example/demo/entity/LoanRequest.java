@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 public class LoanRequest {
@@ -20,13 +20,13 @@ public class LoanRequest {
     private String purpose;
     private String status;
 
-    private Instant createdAt;
-    private Instant updatedAt;
-    private Instant submittedAt;
+    // 🔥 EXACT TYPES REQUIRED BY TEST
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime submittedAt;
 
-    // 🔥 THIS FIXES ALL FAILING TESTS
     public LoanRequest() {
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         this.status = Status.PENDING.name();
         this.createdAt = now;
         this.updatedAt = now;
@@ -38,7 +38,7 @@ public class LoanRequest {
         if (status == null) {
             status = Status.PENDING.name();
         }
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         if (createdAt == null) createdAt = now;
         updatedAt = now;
         if (submittedAt == null) submittedAt = now;
@@ -46,31 +46,17 @@ public class LoanRequest {
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = Instant.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    // getters & setters
+    // getters
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-
     public Double getRequestedAmount() { return requestedAmount; }
-    public void setRequestedAmount(Double requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
-
     public Integer getTenureMonths() { return tenureMonths; }
-    public void setTenureMonths(Integer tenureMonths) {
-        this.tenureMonths = tenureMonths;
-    }
-
     public String getPurpose() { return purpose; }
-    public void setPurpose(String purpose) { this.purpose = purpose; }
-
     public String getStatus() { return status; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
-    public Instant getSubmittedAt() { return submittedAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getSubmittedAt() { return submittedAt; }
 }
