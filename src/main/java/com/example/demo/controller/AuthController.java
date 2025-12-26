@@ -6,7 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
-import com.example.demo.service.impl.UserServiceImpl;
+import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +18,22 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    // Constructor used in tests
-    public AuthController(UserServiceImpl userService,
+    public AuthController(UserService userService,
                           JwtUtil jwtUtil,
                           UserRepository userRepository) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user) {
+        return ResponseEntity.ok(userService.register(user));
     }
 
     @PostMapping("/login")
@@ -50,12 +53,8 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(claims, user.getEmail());
 
-        AuthResponse response = new AuthResponse(
-                token,
-                user.getEmail(),
-                user.getRole()
+        return ResponseEntity.ok(
+                new AuthResponse(token, user.getEmail(), user.getRole())
         );
-
-        return ResponseEntity.ok(response);
     }
 }
