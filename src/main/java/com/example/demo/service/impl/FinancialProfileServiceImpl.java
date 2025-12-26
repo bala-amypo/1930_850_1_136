@@ -1,30 +1,58 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.User;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.UserRepository;
+
+import java.util.Optional;
+
 public class FinancialProfileServiceImpl {
 
-    private final FinancialProfileRepository repo;
-    private final UserRepository userRepo;
+    private final FinancialProfileRepository financialProfileRepository;
+    private final UserRepository userRepository;
 
-    public FinancialProfileServiceImpl(FinancialProfileRepository r, UserRepository u) {
-        this.repo = r;
-        this.userRepo = u;
+    // Constructor injection (REQUIRED by tests)
+    public FinancialProfileServiceImpl(FinancialProfileRepository financialProfileRepository,
+                                       UserRepository userRepository) {
+        this.financialProfileRepository = financialProfileRepository;
+        this.userRepository = userRepository;
     }
 
-    public FinancialProfile createOrUpdate(FinancialProfile fp) {
+    // Create or update financial profile
+    public FinancialProfile createOrUpdate(FinancialProfile profile) {
 
-        if (fp.getCreditScore() < 300 || fp.getCreditScore() > 900)
+        if (profile.getCreditScore() == null ||
+                profile.getCreditScore() < 300 ||
+                profile.getCreditScore() > 900) {
             throw new BadRequestException("Invalid credit score");
-
-        Long userId = fp.getUser().getId();
-        userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        Optional<FinancialProfile> existing = repo.findByUserId(userId);
-        if (existing.isPresent()) {
-            fp.setId(existing.get().getId());
         }
-        return repo.save(fp);
+
+        Long userId = profile.getUser().getId();
+
+        // Check if user exists
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        profile.setUser(user);
+
+        // Check if profile already exists
+        Optional<FinancialProfile> existing =
+                financialProfileRepository.findByUserId(userId);
+
+        if (existing.isPresent()) {
+            // Update existing profile instead of creating new
+            profile.setId(existing.get().getId());
+        }
+
+        return financialProfileRepository.save(profile);
     }
 
-    public FinancialProfile getByUserId(Long id) {
-        return repo.findByUserId(id)
+    // Get profile by user id
+    public FinancialProfile getByUserId(Long userId) {
+        return financialProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

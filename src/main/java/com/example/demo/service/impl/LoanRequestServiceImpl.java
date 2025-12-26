@@ -1,29 +1,54 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.LoanRequest;
+import com.example.demo.entity.User;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.repository.UserRepository;
+
+import java.util.List;
+
 public class LoanRequestServiceImpl {
 
-    private final LoanRequestRepository repo;
-    private final UserRepository userRepo;
+    private final LoanRequestRepository loanRequestRepository;
+    private final UserRepository userRepository;
 
-    public LoanRequestServiceImpl(LoanRequestRepository r, UserRepository u) {
-        this.repo = r;
-        this.userRepo = u;
+    // Constructor injection (REQUIRED)
+    public LoanRequestServiceImpl(LoanRequestRepository loanRequestRepository,
+                                  UserRepository userRepository) {
+        this.loanRequestRepository = loanRequestRepository;
+        this.userRepository = userRepository;
     }
 
-    public LoanRequest submitRequest(LoanRequest lr) {
-        if (lr.getRequestedAmount() <= 0)
-            throw new BadRequestException("Requested amount");
+    // Submit loan request
+    public LoanRequest submitRequest(LoanRequest loanRequest) {
 
-        userRepo.findById(lr.getUser().getId())
+        if (loanRequest.getRequestedAmount() == null ||
+                loanRequest.getRequestedAmount() <= 0) {
+            throw new BadRequestException("Requested amount");
+        }
+
+        Long userId = loanRequest.getUser().getId();
+
+        // Check if user exists
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        return repo.save(lr);
+        loanRequest.setUser(user);
+
+        // Status & submittedAt are set automatically by entity
+        return loanRequestRepository.save(loanRequest);
     }
 
-    public List<LoanRequest> getRequestsByUser(Long id) {
-        return repo.findByUserId(id);
+    // Get all loan requests for a user
+    public List<LoanRequest> getRequestsByUser(Long userId) {
+        return loanRequestRepository.findByUserId(userId);
     }
 
-    public LoanRequest getById(Long id) {
-        return repo.findById(id)
+    // Get loan request by id
+    public LoanRequest getById(Long loanRequestId) {
+        return loanRequestRepository.findById(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
     }
 }
