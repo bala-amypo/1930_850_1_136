@@ -50,4 +50,8 @@ public class FinancialProfile {
     public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
 
     public Instant getLastUpdatedAt() { return lastUpdatedAt; }
+
+    public void setLastUpdatedAt(Instant lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
 }

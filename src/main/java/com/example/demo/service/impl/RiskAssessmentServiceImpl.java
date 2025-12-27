@@ -40,10 +40,14 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
         RiskAssessment risk = new RiskAssessment();
         risk.setLoanRequestId(loanRequestId);
 
-        double income = profile.getMonthlyIncome() == 0 ? 1 : profile.getMonthlyIncome();
+        double income = profile.getMonthlyIncome();
         double obligations = profile.getMonthlyExpenses() + profile.getExistingLoanEmi();
 
-        risk.setDtiRatio(obligations / income);
+        if (income == 0.0) {
+            risk.setDtiRatio(0.0);
+        } else {
+            risk.setDtiRatio(obligations / income);
+        }
         risk.setRiskScore(50.0);
         risk.setCreditCheckStatus("OK");
 

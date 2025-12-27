@@ -35,6 +35,7 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
         profileRepository.findByUserId(userId)
                 .ifPresent(existing -> profile.setId(existing.getId()));
 
+        profile.touch(); // Ensure timestamp is set
         return profileRepository.save(profile);
     }
 
