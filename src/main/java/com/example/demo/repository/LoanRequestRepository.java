@@ -12,3 +12,4 @@ public interface LoanRequestRepository
 
     List<LoanRequest> findByUserId(Long userId);
 }
+    
