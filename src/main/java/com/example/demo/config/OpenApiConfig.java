@@ -15,7 +15,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 // Trainer sonna madhiri server URL mattum
                 .servers(List.of(
-                        new Server().url("https://9274.408procr.amypo.ai/")
+                        new Server().url("https://9231.408procr.amypo.ai/")
                 ));
     }
 }
