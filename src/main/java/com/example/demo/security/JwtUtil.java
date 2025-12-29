@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
-@Component
+
+@Configuration
 public class JwtUtil {
 
     private final Key key;
