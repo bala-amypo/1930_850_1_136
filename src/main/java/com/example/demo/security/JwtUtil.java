@@ -16,11 +16,13 @@ public class JwtUtil {
     private final Key key;
     private final long validityInMs;
 
+    // 🔥 DEFAULT constructor (Spring + tests)
     public JwtUtil() {
-        this("ChangeThisSecretForProductionButKeepItLongEnough", 3600000);
+        this("ChangeThisSecretForProductionButKeepItLongEnough", 3600000L);
     }
 
-    private JwtUtil(String secret, long validityInMs) {
+    // 🔥 MUST be PUBLIC for TestNG
+    public JwtUtil(String secret, long validityInMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.validityInMs = validityInMs;
     }
