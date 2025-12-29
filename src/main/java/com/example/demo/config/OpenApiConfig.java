@@ -13,7 +13,6 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                // Trainer sonna madhiri server URL mattum
                 .servers(List.of(
                         new Server().url("https://9231.408procr.amypo.ai/")
                 ));
